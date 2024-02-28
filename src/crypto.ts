@@ -219,7 +219,11 @@ export async function symEncrypt(
     encodedData
   );
 
-  return arrayBufferToBase64(encryptedData);
+  const encryptedDataWithIv = new Uint8Array(iv.length + encryptedData.byteLength);
+  encryptedDataWithIv.set(iv);
+  encryptedDataWithIv.set(new Uint8Array(encryptedData), iv.length);
+
+  return arrayBufferToBase64(encryptedDataWithIv);
 }
 
 // Decrypt a message using a symmetric key
@@ -232,7 +236,7 @@ export async function symDecrypt(
 
   const key = await importSymKey(strKey);
   const data = base64ToArrayBuffer(encryptedData);
-  const iv = new Uint8Array(16);
+  const iv = data.slice(0, 16);
 
   const decryptedData = await webcrypto.subtle.decrypt(
     {
@@ -240,7 +244,7 @@ export async function symDecrypt(
       iv: iv,
     },
     key,
-    data
+    data.slice(16)
   );
 
   return new TextDecoder().decode(decryptedData);

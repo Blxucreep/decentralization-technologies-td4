@@ -285,7 +285,7 @@ describe("Onion Routing", () => {
         expect(lastSentMessage).toBeNull();
       });
     });
-    /*
+
     describe("Nodes are registered on the registry - 1 pt", () => {
       const servers: http.Server[] = [];
 
@@ -357,7 +357,7 @@ describe("Onion Routing", () => {
         }
       });
     });
-
+    /*
     describe("Sending messages to users - 1 pt", () => {
       const servers: http.Server[] = [];
 

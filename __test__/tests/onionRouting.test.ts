@@ -357,7 +357,7 @@ describe("Onion Routing", () => {
         }
       });
     });
-    /*
+    
     describe("Sending messages to users - 1 pt", () => {
       const servers: http.Server[] = [];
 
@@ -413,7 +413,6 @@ describe("Onion Routing", () => {
         expect(receivedMessage).toBe(randomMessage);
       });
     });
-    */
   });
   
   describe("Creating all cryptographic functions - 4pt", () => {

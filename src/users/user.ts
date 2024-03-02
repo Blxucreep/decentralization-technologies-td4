@@ -9,7 +9,7 @@ export type SendMessageBody = {
 
 export async function user(userId: number) {
   let lastReceivedMessage: string | null = null;
-  let lastSentMessage: number | null = null;
+  let lastSentMessage: string | null = null;
 
   const _user = express();
   _user.use(express.json());
@@ -34,6 +34,14 @@ export async function user(userId: number) {
     console.log(
       `User ${userId} is listening on port ${BASE_USER_PORT + userId}`
     );
+  });
+
+  // 4 sending messages to users
+  // /message
+  _user.post("/message", (req, res) => {
+    const { message, destinationUserId } = req.body as SendMessageBody;
+    lastReceivedMessage = message;
+    res.send("success");
   });
 
   return server;

@@ -44,7 +44,7 @@ export async function user(userId: number) {
   // 4 sending messages to users
   // /message
   _user.post("/message", (req, res) => {
-    const { message, destinationUserId } = req.body;
+    const { message } = req.body;
     lastReceivedMessage = message;
     res.send("success");
   });

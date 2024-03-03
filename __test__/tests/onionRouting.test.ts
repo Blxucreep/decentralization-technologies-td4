@@ -516,7 +516,7 @@ describe("Onion Routing", () => {
 
     test.todo("Hidden test - Can symmetrically encrypt and decrypt - 1pt");
   });
-  /*
+
   describe("Can forward messages through the network - 10 pt", () => {
     const servers: http.Server[] = [];
 
@@ -702,5 +702,4 @@ describe("Onion Routing", () => {
 
     test.todo("Hidden test - Edge case #2 - 1pt");
   });
-  */
 });

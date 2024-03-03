@@ -2,7 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import { BASE_ONION_ROUTER_PORT } from "../config";
 import { REGISTRY_PORT } from "../config";
-import { generateRsaKeyPair, exportPubKey, exportPrvKey } from "../crypto";
+import { generateRsaKeyPair, exportPubKey, exportPrvKey, importPrvKey, rsaDecrypt, symDecrypt } from "../crypto";
 
 export async function simpleOnionRouter(nodeId: number) {
   let lastReceivedEncryptedMessage: string | null = null;
@@ -67,6 +67,31 @@ export async function simpleOnionRouter(nodeId: number) {
   // /getPrivateKey
   onionRouter.get("/getPrivateKey", (req, res) => {
     res.json({ result: privateKey });
+  });
+
+  // 6.2 nodes's /message route
+  // /message
+  onionRouter.post("/message", async (req, res) => {
+    const layer = req.body.message;
+    // decrypt the outer layer
+    const encryptedSymKey = layer.slice(0, 344);
+    const symKey = privateKey ? await rsaDecrypt(encryptedSymKey, await importPrvKey(privateKey)) : null;
+    const encryptedMessage = layer.slice(344) as string;
+    const message = symKey ? await symDecrypt(symKey, encryptedMessage) : null;
+    // store the encrypted/decrpyted message and the source/destination
+    lastReceivedEncryptedMessage = layer;
+    lastReceivedDecryptedMessage = message ? message.slice(10) : null;
+    lastMessageSource = nodeId;
+    lastMessageDestination = message ? parseInt(message.slice(0, 10), 10) : null;
+    // send the message to the next node
+    await fetch(`http://localhost:${lastMessageDestination}/message`, {
+      method: "POST",
+      body: JSON.stringify({ message: lastReceivedDecryptedMessage }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    res.send("success");
   });
 
   return server;
